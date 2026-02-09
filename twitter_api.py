@@ -189,10 +189,6 @@ class TwitterMySQLAPI:
 class TwitterRedisAPI:
     """Redis-backed implementation of the Twitter API.
 
-    This follows the assignment's intended design: when a tweet is posted, we
-    *fan-out on write* by copying the tweet id into each follower's home
-    timeline. That makes get_home_timeline very fast.
-
     Key schema (all keys are strings):
       - tweet:{tweet_id} (HASH): user_id, tweet_ts, tweet_text
       - followers:{user_id} (SET): follower_ids
@@ -341,7 +337,6 @@ class TwitterRedisAPI:
     def get_random_follower_id(self) -> Optional[int]:
         """Return a random follower_id.
 
-        We maintain a Redis set 'all_followers' during load_follows_csv.
         """
         # SRANDMEMBER returns None if key doesn't exist / empty.
         v = self.r.srandmember("all_followers")
